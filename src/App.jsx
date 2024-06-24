@@ -1,7 +1,11 @@
 import { useRef, useState,useEffect} from 'react'
 import './App.css'
+import { useFormik } from 'formik'
+
 
 function App() {
+  
+
   const inputRef =useRef({})
   const [otp,setOtp]=useState({
     digitOne:"",
@@ -21,7 +25,16 @@ function App() {
     return ()=> inputRef.current[0].removeEventListener("paste",pasteText)
   },[])
 
-  
+  const pasteText=(event)=>{
+    const pastedText = event.clipboardData.getData("text")
+    
+    const fieldValues ={};
+    Object.keys(otp).forEach((keys,index)=>{
+      fieldValues[keys] = pastedText[index];
+    })
+    setOtp(fieldValues)
+    inputRef.current[5].focus()
+  }
 
   const handleChange=(event,index)=>{
     const {name,value} = event.target
