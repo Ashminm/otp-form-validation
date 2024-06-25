@@ -4,7 +4,7 @@ import { useFormik,Formik } from 'formik'
 
 const validate=(values)=>{
   const errors={}
-  if(values.otp[0]===""){
+  if(Object.values(values.otp).some((data)=> data==="")){
     errors.otp="This field is required"
   }
   return errors
@@ -17,7 +17,8 @@ function App() {
     },
     validate,
     onSubmit: values=>{
-      console.log(values);
+      console.log(values.otp.join(""));
+      alert("You submited otp: "+values.otp.join(""))
     },
   })
 
@@ -91,7 +92,7 @@ function App() {
          </div>
         </Formik>
         
-        {formik.errors.otp && <p>Please fill the fields!!</p> }
+        {formik.errors.otp && <p className='mt-3 text-sm text-red-400'>Please fill the fields!!</p> }
         <button type='button' onClick={formik.handleSubmit} className='mt-4 w-32 border border-solid bg-[#3b3b3b] rounded hover:bg-[#252525] hover:border-[#3b3b3b]'>Submit</button>
       </form>
     </>
