@@ -1,21 +1,29 @@
 import { useRef, useState,useEffect} from 'react'
 import './App.css'
-import { useFormik } from 'formik'
+import { useFormik,Formik } from 'formik'
 
+const validate=(values)=>{
+  const errors={}
+  if(values.otp[0]===""){
+    errors.otp="This field is required"
+  }
+  return errors
+}
 
 function App() {
-  
-
-  const inputRef =useRef({})
-  const [otp,setOtp]=useState({
-    digitOne:"",
-    digitTwo:"",
-    digitThree:"",
-    digitFour:"",
-    digitFive:"",
-    digitSix:"",
+  const formik = useFormik({
+    initialValues:{
+      otp:Array.from({length:6}).fill("")
+    },
+    validate,
+    onSubmit: values=>{
+      console.log(values);
+    },
   })
 
+  // console.log(formik.values);
+
+  const inputRef =useRef({})
 
   useEffect(()=>{
     inputRef.current[0].focus()
@@ -24,6 +32,7 @@ function App() {
 
     return ()=> inputRef.current[0].removeEventListener("paste",pasteText)
   },[])
+
 
   const pasteText=(event)=>{
     const pastedText = event.clipboardData.getData("text")
@@ -36,14 +45,17 @@ function App() {
     inputRef.current[5].focus()
   }
 
+
   const handleChange=(event,index)=>{
-    const {name,value} = event.target
+    const {value} = event.target
 
     if(/[a-z]/gi.test(value)) return;
 
-    setOtp(prev=>({
+    const currentOTP = [...formik.values.otp]
+    currentOTP[index] = value.slice(-1)
+    formik.setValues((prev)=>({
       ...prev,
-      [name]: value.slice(-1),
+      otp:currentOTP
     }))
 
    if(value&&index < 5){
@@ -62,10 +74,10 @@ function App() {
   }
 
   const renderInput=(keys,index)=>{
-    return Object.keys(otp).map((keys,index)=>(
-     <input type="text" ref={element=> inputRef.current[index] = element} key={index} name={keys}
+    return formik.values.otp.map((value,index)=>(
+     <input type="text" ref={element=> inputRef.current[index] = element} key={index} name={index}
       className='w-16 h-12 rounded-md mr-3 text-center text-xl' onKeyUp={(event)=>handleBackspace(event,index)}
-       onChange={(event)=>handleChange(event,index)} value={otp[keys]} />
+       onChange={(event)=>handleChange(event,index)} value={value} />
 
     ))
   }
@@ -73,10 +85,14 @@ function App() {
     <>
       <form action="">
         <h3 className='text-3xl mb-8'>Please fill in the otp</h3>
-        <div>
+        <Formik>
+         <div className="">
          {renderInput()}
-        </div>
-        <button className='mt-4 w-32 border border-solid bg-[#3b3b3b] rounded hover:bg-[#252525] hover:border-[#3b3b3b]'>Submit</button>
+         </div>
+        </Formik>
+        
+        {formik.errors.otp && <p>Please fill the fields!!</p> }
+        <button type='button' onClick={formik.handleSubmit} className='mt-4 w-32 border border-solid bg-[#3b3b3b] rounded hover:bg-[#252525] hover:border-[#3b3b3b]'>Submit</button>
       </form>
     </>
   )
