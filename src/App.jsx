@@ -1,4 +1,4 @@
-import { useRef, useState,useEffect} from 'react'
+import { useRef,useEffect} from 'react'
 import './App.css'
 import { useFormik,Formik } from 'formik'
 
@@ -64,7 +64,6 @@ function App() {
    }
     // event.target.nextSibling.focus()
   }
-  // console.log(inputRef.current);
 
   const handleBackspace=(event,index)=>{
     if(event.key==="Backspace"){
